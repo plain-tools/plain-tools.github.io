@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JWT Decoder — Decode Header and Payload in the Browser</title>
+  <meta name="description" content="Paste a JWT to decode its header and payload in your browser. No upload. Decode only, not signature verification.">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does this JWT decoder send my token to a server?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Decoding runs in your browser with JavaScript. The token never leaves this page."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does this tool verify the JWT signature?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. It only base64url-decodes the header and payload. A valid-looking payload is not proof the token is authentic. Use this to inspect claims, not to trust them."}
+      },
+      {
+        "@type": "Question",
+        "name": "What format does a JWT have?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Three base64url parts separated by dots: header.payload.signature. Encrypted JWEs are not supported here."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I decode expired tokens?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Expiration is a claim in the payload. This tool shows exp, iat, and nbf as UTC timestamps when they are numeric. It does not reject expired tokens."}
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need an account?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No account, no upload, no install. Paste a JWT and decode it."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../">Plain Tools</a>
+      <a href="../json-formatter/">JSON Formatter</a>
+    </nav>
+    <h1>JWT Decoder</h1>
+    <p class="lede">Decode a JSON Web Token in your browser. Nothing is uploaded. Signature is not verified.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <button class="primary" id="decode" type="button">Decode</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature"></textarea>
+    <p class="status" id="status">Paste a JWT, then decode.</p>
+    <div class="cols">
+      <div class="panel">
+        <h3>Header</h3>
+        <pre class="out" id="header">{}</pre>
+      </div>
+      <div class="panel">
+        <h3>Payload</h3>
+        <pre class="out" id="payload">{}</pre>
+      </div>
+    </div>
+    <p class="note" id="times"></p>
+    <section>
+      <h2>What this tool does</h2>
+      <p>A JWT is three base64url segments: header, payload, and signature. This page decodes the first two and pretty-prints the JSON. It does not check the signature, so a decoded token is not a verified token.</p>
+    </section>
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>Does this JWT decoder send my token to a server?</summary><p>No. Decoding runs in your browser with JavaScript. The token never leaves this page.</p></details>
+      <details><summary>Does this tool verify the JWT signature?</summary><p>No. It only base64url-decodes the header and payload. A valid-looking payload is not proof the token is authentic. Use this to inspect claims, not to trust them.</p></details>
+      <details><summary>What format does a JWT have?</summary><p>Three base64url parts separated by dots: header.payload.signature. Encrypted JWEs are not supported here.</p></details>
+      <details><summary>Can I decode expired tokens?</summary><p>Yes. Expiration is a claim in the payload. This tool shows exp, iat, and nbf as UTC timestamps when they are numeric. It does not reject expired tokens.</p></details>
+      <details><summary>Do I need an account?</summary><p>No account, no upload, no install. Paste a JWT and decode it.</p></details>
+    </section>
+  </main>
+  <footer>Plain Tools · decode only, not verification.</footer>
+  <script>
+    const input = document.getElementById('input');
+    const status = document.getElementById('status');
+    const headerEl = document.getElementById('header');
+    const payloadEl = document.getElementById('payload');
+    const timesEl = document.getElementById('times');
+    function setStatus(msg, kind) { status.textContent = msg; status.className = 'status' + (kind ? ' ' + kind : ''); }
+    function b64url(str) {
+      const pad = '='.repeat((4 - (str.length % 4)) % 4);
+      const b64 = (str + pad).replace(/-/g, '+').replace(/_/g, '/');
+      const bin = atob(b64);
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+    function decodePart(part) { return JSON.parse(b64url(part)); }
+    function fmtTime(n) {
+      if (typeof n !== 'number') return null;
+      const ms = n > 1e12 ? n : n * 1000;
+      return new Date(ms).toISOString();
+    }
+    function decode() {
+      const raw = input.value.trim();
+      if (!raw) { setStatus('Paste a JWT first.', 'bad'); return; }
+      const parts = raw.split('.');
+      if (parts.length < 2) { setStatus('Not a JWT. Need header.payload.signature', 'bad'); return; }
+      const header = decodePart(parts[0]);
+      const payload = decodePart(parts[1]);
+      headerEl.textContent = JSON.stringify(header, null, 2);
+      payloadEl.textContent = JSON.stringify(payload, null, 2);
+      const bits = [];
+      if (payload.iat != null) bits.push('iat ' + fmtTime(payload.iat));
+      if (payload.nbf != null) bits.push('nbf ' + fmtTime(payload.nbf));
+      if (payload.exp != null) bits.push('exp ' + fmtTime(payload.exp));
+      timesEl.textContent = bits.join(' · ');
+      const alg = header.alg ? (' alg ' + header.alg) : '';
+      setStatus('Decoded' + alg + '. Signature not verified.', 'ok');
+    }
+    document.getElementById('decode').onclick = () => {
+      try { decode(); } catch (err) { setStatus(err.message, 'bad'); }
+    };
+    document.getElementById('clear').onclick = () => {
+      input.value = ''; headerEl.textContent = '{}'; payloadEl.textContent = '{}'; timesEl.textContent = '';
+      setStatus('Cleared.');
+    };
+  </script>
+</body>
+</html>
