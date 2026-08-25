@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON Formatter Online — Beautify, Minify, Validate</title>
+  <meta name="description" content="Paste JSON to format, minify, or validate it in your browser. No upload. No account. Works after the page loads.">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does this JSON formatter send my data to a server?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Formatting, minifying, and validation run in your browser with JavaScript. The JSON never leaves this page."}
+      },
+      {
+        "@type": "Question",
+        "name": "What makes JSON invalid?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Common issues are trailing commas, single quotes, unquoted keys, comments, and truncated strings. This tool reports the parser error so you can fix the exact spot."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I minify JSON as well as pretty-print it?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Beautify adds indentation. Minify removes extra whitespace. Both require the input to be valid JSON."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is this the same as a JSON validator?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Validation is included. If parse fails, you get the error message instead of formatted output. If parse succeeds, the JSON is valid."}
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need an account?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No account, no upload, no install. Paste JSON and format it."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../">Plain Tools</a>
+    </nav>
+    <h1>JSON Formatter</h1>
+    <p class="lede">Beautify, minify, or validate JSON in your browser. Nothing is uploaded.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <button class="primary" id="beautify" type="button">Beautify</button>
+      <button id="minify" type="button">Minify</button>
+      <button id="validate" type="button">Validate</button>
+      <button id="copy" type="button">Copy</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder='{"hello": "world"}'></textarea>
+    <p class="status" id="status">Paste JSON, then beautify or validate.</p>
+    <section>
+      <h2>What this tool does</h2>
+      <p>Paste a JSON string, then beautify it with 2-space indents, minify it for payloads, or check whether it parses. Parsing uses the browser’s built-in JSON.parse, so the result matches what JavaScript will accept.</p>
+    </section>
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>Does this JSON formatter send my data to a server?</summary><p>No. Formatting, minifying, and validation run in your browser with JavaScript. The JSON never leaves this page.</p></details>
+      <details><summary>What makes JSON invalid?</summary><p>Common issues are trailing commas, single quotes, unquoted keys, comments, and truncated strings. This tool reports the parser error so you can fix the exact spot.</p></details>
+      <details><summary>Can I minify JSON as well as pretty-print it?</summary><p>Yes. Beautify adds indentation. Minify removes extra whitespace. Both require the input to be valid JSON.</p></details>
+      <details><summary>Is this the same as a JSON validator?</summary><p>Validation is included. If parse fails, you get the error message instead of formatted output. If parse succeeds, the JSON is valid.</p></details>
+      <details><summary>Do I need an account?</summary><p>No account, no upload, no install. Paste JSON and format it.</p></details>
+    </section>
+  </main>
+  <footer>Plain Tools · sibling tools land as they ship.</footer>
+  <script>
+    const input = document.getElementById('input');
+    const status = document.getElementById('status');
+    function parse() { return JSON.parse(input.value); }
+    function setStatus(msg, kind) { status.textContent = msg; status.className = 'status' + (kind ? ' ' + kind : ''); }
+    function run(fn) {
+      try { fn(); }
+      catch (err) { setStatus(err.message, 'bad'); }
+    }
+    document.getElementById('beautify').onclick = () => run(() => {
+      input.value = JSON.stringify(parse(), null, 2);
+      setStatus('Valid JSON. Beautified.', 'ok');
+    });
+    document.getElementById('minify').onclick = () => run(() => {
+      input.value = JSON.stringify(parse());
+      setStatus('Valid JSON. Minified.', 'ok');
+    });
+    document.getElementById('validate').onclick = () => run(() => {
+      parse();
+      setStatus('Valid JSON.', 'ok');
+    });
+    document.getElementById('copy').onclick = async () => {
+      await navigator.clipboard.writeText(input.value);
+      setStatus('Copied to clipboard.');
+    };
+    document.getElementById('clear').onclick = () => { input.value = ''; setStatus('Cleared.'); };
+  </script>
+</body>
+</html>
