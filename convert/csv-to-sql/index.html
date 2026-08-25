@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSV to SQL — Convert CSV to INSERT Statements</title>
+  <meta name="description" content="Paste a CSV and get SQL INSERT statements in your browser. Optional CREATE TABLE. MySQL, Postgres, or SQLite. Nothing is uploaded.">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does this CSV to SQL converter upload my file?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Parsing and SQL generation run in your browser. The CSV never leaves this page."}
+      },
+      {
+        "@type": "Question",
+        "name": "What SQL dialects are supported?",
+        "acceptedAnswer": {"@type": "Answer", "text": "MySQL, PostgreSQL, and SQLite. Identifier quoting changes with the dialect. Values are escaped as SQL strings unless they parse as numbers or booleans."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does the first row have to be headers?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. The first row becomes column names. They are turned into safe SQL identifiers. Duplicate or empty headers get a numeric suffix."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get a CREATE TABLE statement too?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Check Include CREATE TABLE. Column types are guessed from the first rows: INTEGER, REAL, or TEXT."}
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need an account?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No account, no upload, no install. Paste CSV and convert it."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../../">Plain Tools</a>
+      <a href="../../json-formatter/">JSON Formatter</a>
+      <a href="../../jwt-decoder/">JWT Decoder</a>
+    </nav>
+    <h1>CSV to SQL</h1>
+    <p class="lede">Paste a CSV. Get INSERT statements in your browser. Nothing is uploaded.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <label class="field">Table <input id="table" value="my_table" spellcheck="false"></label>
+      <label class="field">Dialect
+        <select id="dialect">
+          <option value="mysql">MySQL</option>
+          <option value="postgres">PostgreSQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </label>
+      <label class="field"><input id="ddl" type="checkbox" checked> CREATE TABLE</label>
+      <button class="primary" id="convert" type="button">Convert</button>
+      <button id="copy" type="button">Copy SQL</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder='id,name,active&#10;1,Ada,true&#10;2,Linus,false'></textarea>
+    <p class="status" id="status">Paste CSV, then convert.</p>
+    <textarea id="output" spellcheck="false" placeholder="SQL lands here"></textarea>
+    <section>
+      <h2>What this tool does</h2>
+      <p>The first row is treated as column names. Each following row becomes an INSERT. Quoted CSV fields, commas inside quotes, and doubled quotes are handled. Conversion is local JavaScript, not a server job.</p>
+    </section>
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>Does this CSV to SQL converter upload my file?</summary><p>No. Parsing and SQL generation run in your browser. The CSV never leaves this page.</p></details>
+      <details><summary>What SQL dialects are supported?</summary><p>MySQL, PostgreSQL, and SQLite. Identifier quoting changes with the dialect. Values are escaped as SQL strings unless they parse as numbers or booleans.</p></details>
+      <details><summary>Does the first row have to be headers?</summary><p>Yes. The first row becomes column names. They are turned into safe SQL identifiers. Duplicate or empty headers get a numeric suffix.</p></details>
+      <details><summary>Can I get a CREATE TABLE statement too?</summary><p>Yes. Check Include CREATE TABLE. Column types are guessed from the first rows: INTEGER, REAL, or TEXT.</p></details>
+      <details><summary>Do I need an account?</summary><p>No account, no upload, no install. Paste CSV and convert it.</p></details>
+    </section>
+  </main>
+  <footer>Plain Tools · related: JSON Formatter, JWT Decoder, JSON to SQL.</footer>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    function setStatus(msg, kind) { status.textContent = msg; status.className = 'status' + (kind ? ' ' + kind : ''); }
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cur = '';
+      let q = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (q) {
+          if (c === '"') {
+            if (text[i + 1] === '"') { cur += '"'; i++; }
+            else q = false;
+          } else cur += c;
+        } else if (c === '"') q = true;
+        else if (c === ',') { row.push(cur); cur = ''; }
+        else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+        else if (c !== '\r') cur += c;
+      }
+      if (cur.length || row.length) { row.push(cur); rows.push(row); }
+      return rows.filter(r => r.some(cell => cell.trim() !== ''));
+    }
+    function ident(name, dialect) {
+      let s = String(name || 'col').trim().replace(/[^\w]+/g, '_').replace(/^(\d)/, '_$1') || 'col';
+      if (dialect === 'mysql') return '`' + s.replace(/`/g, '``') + '`';
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    function sqlVal(v) {
+      const t = String(v).trim();
+      if (t === '') return 'NULL';
+      if (/^(true|false)$/i.test(t)) return t.toLowerCase();
+      if (/^-?\d+$/.test(t)) return t;
+      if (/^-?\d+\.\d+$/.test(t)) return t;
+      return "'" + t.replace(/'/g, "''") + "'";
+    }
+    function guessType(vals) {
+      const n = vals.filter(v => String(v).trim() !== '');
+      if (!n.length) return 'TEXT';
+      if (n.every(v => /^-?\d+$/.test(String(v).trim()))) return 'INTEGER';
+      if (n.every(v => /^-?\d+(\.\d+)?$/.test(String(v).trim()))) return 'REAL';
+      return 'TEXT';
+    }
+    function uniqueHeaders(raw, dialect) {
+      const seen = {};
+      return raw.map((h, i) => {
+        let base = String(h || '').trim() || ('col_' + (i + 1));
+        let name = base;
+        let n = 2;
+        while (seen[name.toLowerCase()]) { name = base + '_' + n; n++; }
+        seen[name.toLowerCase()] = true;
+        return ident(name, dialect);
+      });
+    }
+    function convert() {
+      const rows = parseCsv(input.value);
+      if (rows.length < 2) throw new Error('Need a header row and at least one data row.');
+      const dialect = document.getElementById('dialect').value;
+      const table = ident(document.getElementById('table').value || 'my_table', dialect);
+      const headers = uniqueHeaders(rows[0], dialect);
+      const data = rows.slice(1).map(r => {
+        const cells = r.slice();
+        while (cells.length < headers.length) cells.push('');
+        return cells.slice(0, headers.length);
+      });
+      const parts = [];
+      if (document.getElementById('ddl').checked) {
+        const cols = headers.map((h, i) => h + ' ' + guessType(data.map(r => r[i])));
+        parts.push('CREATE TABLE ' + table + ' (\n  ' + cols.join(',\n  ') + '\n);');
+      }
+      const colList = headers.join(', ');
+      data.forEach(r => {
+        parts.push('INSERT INTO ' + table + ' (' + colList + ') VALUES (' + r.map(sqlVal).join(', ') + ');');
+      });
+      output.value = parts.join('\n');
+      setStatus(data.length + ' row' + (data.length === 1 ? '' : 's') + ' converted. Nothing uploaded.', 'ok');
+    }
+    document.getElementById('convert').onclick = () => {
+      try { convert(); } catch (err) { setStatus(err.message, 'bad'); }
+    };
+    document.getElementById('copy').onclick = async () => {
+      if (!output.value) { setStatus('Convert first.', 'bad'); return; }
+      await navigator.clipboard.writeText(output.value);
+      setStatus('Copied SQL.');
+    };
+    document.getElementById('clear').onclick = () => {
+      input.value = ''; output.value = ''; setStatus('Cleared.');
+    };
+  </script>
+</body>
+</html>

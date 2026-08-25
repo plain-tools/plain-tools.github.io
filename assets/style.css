@@ -26,3 +26,6 @@ pre.out { width:100%; min-height: 140px; background:#0b1015; color:var(--ink); b
 @media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr; } }
 .panel h3 { margin: 0 0 .4rem; font-size:.95rem; color: var(--muted); font-weight: 600; }
 .note { color: var(--muted); font-size:.9rem; }
+.toolbar { align-items:center; }
+label.field { display:flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.9rem; }
+input, select { background:#0b1015; color:var(--ink); border:1px solid var(--line); border-radius: 8px; padding: .4rem .55rem; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
