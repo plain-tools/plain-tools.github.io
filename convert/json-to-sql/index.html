@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSON to SQL — Convert JSON to INSERT Statements</title>
+  <meta name="description" content="Paste JSON, get SQL INSERT statements in your browser. Optional CREATE TABLE. MySQL, Postgres, or SQLite. Nothing is uploaded.">
+  <link rel="stylesheet" href="../../assets/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does this JSON to SQL converter upload my data?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Parsing and SQL generation run in your browser. The JSON never leaves this page. No account, no upload, no install."}
+      },
+      {
+        "@type": "Question",
+        "name": "What SQL dialects are supported?",
+        "acceptedAnswer": {"@type": "Answer", "text": "MySQL, PostgreSQL, and SQLite. Identifier quoting changes with the dialect. Numbers stay unquoted. Booleans are true or false. Nested objects and arrays become JSON text inside a SQL string."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does JSON have to be an array of objects?",
+        "acceptedAnswer": {"@type": "Answer", "text": "An array of objects is the primary input. A single object is treated as one row. If the root is an object that wraps rows (for example {\"table\": [...]}), the first array of objects is used."}
+      },
+      {
+        "@type": "Question",
+        "name": "What happens to nested objects and arrays?",
+        "acceptedAnswer": {"@type": "Answer", "text": "They are stored as JSON text in a SQL string. Nothing is flattened, so nested data is not lost. In CREATE TABLE those columns are TEXT."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I get a CREATE TABLE statement too?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Check CREATE TABLE. Column types are guessed from values: INTEGER, REAL, or TEXT. Nested objects and arrays are TEXT. No account is required."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../../">Plain Tools</a>
+      <a href="../../json-formatter/">JSON Formatter</a>
+      <a href="../../convert/csv-to-sql/">CSV to SQL</a>
+      <a href="../../jwt-decoder/">JWT Decoder</a>
+    </nav>
+    <h1>JSON to SQL</h1>
+    <p class="lede">Paste JSON. Get INSERT statements in your browser. Nothing is uploaded.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <label class="field">Table <input id="table" value="my_table" spellcheck="false"></label>
+      <label class="field">Dialect
+        <select id="dialect">
+          <option value="mysql">MySQL</option>
+          <option value="postgres">PostgreSQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </label>
+      <label class="field"><input id="ddl" type="checkbox" checked> CREATE TABLE</label>
+      <button class="primary" id="convert" type="button">Convert</button>
+      <button id="copy" type="button">Copy SQL</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder='[{"id":1,"name":"Ada"},{"id":2,"name":"Linus"}]'></textarea>
+    <p class="status" id="status">Paste JSON, then convert.</p>
+    <textarea id="output" spellcheck="false" placeholder="SQL lands here"></textarea>
+    <section>
+      <h2>What this tool does</h2>
+      <p>Paste an array of objects, a single object, or an object that wraps rows. Column names are the union of keys in first-seen order. Nested objects and arrays become JSON text. Conversion is local JavaScript, not a server job.</p>
+    </section>
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>Does this JSON to SQL converter upload my data?</summary><p>No. Parsing and SQL generation run in your browser. The JSON never leaves this page. No account, no upload, no install.</p></details>
+      <details><summary>What SQL dialects are supported?</summary><p>MySQL, PostgreSQL, and SQLite. Identifier quoting changes with the dialect. Numbers stay unquoted. Booleans are true or false. Nested objects and arrays become JSON text inside a SQL string.</p></details>
+      <details><summary>Does JSON have to be an array of objects?</summary><p>An array of objects is the primary input. A single object is treated as one row. If the root is an object that wraps rows (for example {"table": [...]}), the first array of objects is used.</p></details>
+      <details><summary>What happens to nested objects and arrays?</summary><p>They are stored as JSON text in a SQL string. Nothing is flattened, so nested data is not lost. In CREATE TABLE those columns are TEXT.</p></details>
+      <details><summary>Can I get a CREATE TABLE statement too?</summary><p>Yes. Check CREATE TABLE. Column types are guessed from values: INTEGER, REAL, or TEXT. Nested objects and arrays are TEXT. No account is required.</p></details>
+    </section>
+  </main>
+  <footer>Plain Tools · related: CSV to SQL, JSON Formatter, JWT Decoder. JSON to Excel is queued, not live.</footer>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    function setStatus(msg, kind) { status.textContent = msg; status.className = 'status' + (kind ? ' ' + kind : ''); }
+    function isPlainObject(v) {
+      return v !== null && typeof v === 'object' && !Array.isArray(v);
+    }
+    function extractRows(data) {
+      if (Array.isArray(data)) {
+        const objs = data.filter(isPlainObject);
+        if (!objs.length) throw new Error('Need an array of objects, a single object, or an object wrapping an array of objects.');
+        return objs;
+      }
+      if (isPlainObject(data)) {
+        for (const k of Object.keys(data)) {
+          const v = data[k];
+          if (Array.isArray(v) && v.some(isPlainObject)) {
+            const objs = v.filter(isPlainObject);
+            if (objs.length) return objs;
+          }
+        }
+        return [data];
+      }
+      throw new Error('JSON must be an object or an array of objects.');
+    }
+    function ident(name, dialect) {
+      let s = String(name || 'col').trim().replace(/[^\w]+/g, '_').replace(/^(\d)/, '_$1') || 'col';
+      if (dialect === 'mysql') return '`' + s.replace(/`/g, '``') + '`';
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    function uniqueHeaders(raw, dialect) {
+      const seen = {};
+      return raw.map((h, i) => {
+        let base = String(h || '').trim() || ('col_' + (i + 1));
+        let name = base;
+        let n = 2;
+        while (seen[name.toLowerCase()]) { name = base + '_' + n; n++; }
+        seen[name.toLowerCase()] = true;
+        return ident(name, dialect);
+      });
+    }
+    function sqlVal(v) {
+      if (v === null || v === undefined) return 'NULL';
+      if (typeof v === 'boolean') return v ? 'true' : 'false';
+      if (typeof v === 'number') {
+        if (!Number.isFinite(v)) return 'NULL';
+        return String(v);
+      }
+      if (typeof v === 'string') {
+        if (v === '') return 'NULL';
+        return "'" + v.replace(/'/g, "''") + "'";
+      }
+      const t = JSON.stringify(v);
+      return "'" + t.replace(/'/g, "''") + "'";
+    }
+    function guessType(vals) {
+      const n = vals.filter(v => v !== null && v !== undefined && !(typeof v === 'string' && v === ''));
+      if (!n.length) return 'TEXT';
+      if (n.some(v => typeof v === 'object')) return 'TEXT';
+      if (n.every(v => typeof v === 'number' && Number.isInteger(v))) return 'INTEGER';
+      if (n.every(v => typeof v === 'number' && Number.isFinite(v))) return 'REAL';
+      return 'TEXT';
+    }
+    function convert() {
+      const raw = input.value.trim();
+      if (!raw) throw new Error('Paste JSON first.');
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (err) { throw new Error('Invalid JSON: ' + err.message); }
+      const rows = extractRows(data);
+      const keys = [];
+      const seen = {};
+      rows.forEach(row => {
+        Object.keys(row).forEach(k => {
+          if (!Object.prototype.hasOwnProperty.call(seen, k)) {
+            seen[k] = true;
+            keys.push(k);
+          }
+        });
+      });
+      if (!keys.length) throw new Error('No object keys to turn into columns.');
+      const dialect = document.getElementById('dialect').value;
+      const table = ident(document.getElementById('table').value || 'my_table', dialect);
+      const headers = uniqueHeaders(keys, dialect);
+      const dataRows = rows.map(row => keys.map(k => Object.prototype.hasOwnProperty.call(row, k) ? row[k] : null));
+      const parts = [];
+      if (document.getElementById('ddl').checked) {
+        const cols = headers.map((h, i) => h + ' ' + guessType(dataRows.map(r => r[i])));
+        parts.push('CREATE TABLE ' + table + ' (\n  ' + cols.join(',\n  ') + '\n);');
+      }
+      const colList = headers.join(', ');
+      dataRows.forEach(r => {
+        parts.push('INSERT INTO ' + table + ' (' + colList + ') VALUES (' + r.map(sqlVal).join(', ') + ');');
+      });
+      output.value = parts.join('\n');
+      setStatus(dataRows.length + ' row' + (dataRows.length === 1 ? '' : 's') + ' converted. Nothing uploaded.', 'ok');
+    }
+    document.getElementById('convert').onclick = () => {
+      try { convert(); } catch (err) { setStatus(err.message, 'bad'); }
+    };
+    document.getElementById('copy').onclick = async () => {
+      if (!output.value) { setStatus('Convert first.', 'bad'); return; }
+      await navigator.clipboard.writeText(output.value);
+      setStatus('Copied SQL.');
+    };
+    document.getElementById('clear').onclick = () => {
+      input.value = ''; output.value = ''; setStatus('Cleared.');
+    };
+  </script>
+</body>
+</html>
