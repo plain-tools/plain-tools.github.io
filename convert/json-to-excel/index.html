@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Convert JSON to Excel Online Free — Download XLS or CSV</title>
+  <meta name="description" content="Paste JSON, preview a table, and download Excel (.xls) or CSV in your browser. Nothing is uploaded. Free, no account.">
+  <style>
+    :root { --bg:#0f1419; --card:#1a222c; --ink:#e7eef7; --muted:#8aa0b5; --line:#2a3644; --acc:#3d9cf0; --ok:#3ecf8e; --bad:#f07178; }
+    * { box-sizing: border-box; }
+    body { margin:0; font: 16px/1.5 ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+    header, main, footer { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem; }
+    header nav a { color: var(--acc); text-decoration: none; margin-right: .9rem; }
+    h1 { font-size: 1.8rem; margin: .6rem 0 .35rem; }
+    .lede, footer, .muted { color: var(--muted); }
+    .toolbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin: 0 0 .75rem; }
+    label.field { display:flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.9rem; }
+    input, select { background:#0b1015; color:var(--ink); border:1px solid var(--line); border-radius: 8px; padding: .4rem .55rem; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    button { background: var(--card); color: var(--ink); border:1px solid var(--line); border-radius: 8px; padding: .45rem .8rem; cursor:pointer; }
+    button.primary { background: var(--acc); border-color: var(--acc); color:#071018; font-weight: 650; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    textarea { width:100%; min-height: 200px; background:#0b1015; color:var(--ink); border:1px solid var(--line); border-radius: 10px; padding: .9rem; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .status { min-height: 1.4em; font-size: .9rem; color: var(--muted); margin: .5rem 0 1.25rem; }
+    .status.ok { color: var(--ok); } .status.bad { color: var(--bad); }
+    section { margin: 2rem 0; }
+    h2 { font-size: 1.15rem; }
+    .faq details { background: var(--card); border:1px solid var(--line); border-radius: 10px; padding: .7rem .9rem; margin: .5rem 0; }
+    footer { font-size: .85rem; border-top:1px solid var(--line); }
+    .preview-wrap { overflow:auto; max-height: 320px; border:1px solid var(--line); border-radius: 10px; background: var(--card); }
+    table.preview { border-collapse: collapse; width: 100%; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    table.preview th, table.preview td { border-bottom:1px solid var(--line); padding: .45rem .6rem; text-align:left; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+    table.preview th { position: sticky; top: 0; background:#222b36; color: var(--ink); }
+    table.preview td { color: var(--muted); }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Does this JSON to Excel converter upload my data?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Parsing, table preview, and file generation run in your browser. The JSON never leaves this page. No account, no upload, no install."}
+      },
+      {
+        "@type": "Question",
+        "name": "What Excel formats can I download?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Excel Spreadsheet XML (.xls), which opens in Microsoft Excel, Google Sheets, LibreOffice, and Numbers, and CSV (.csv) with UTF-8 BOM for Excel-friendly encoding. Both are generated locally."}
+      },
+      {
+        "@type": "Question",
+        "name": "What JSON shape works best?",
+        "acceptedAnswer": {"@type": "Answer", "text": "An array of objects is ideal — each object becomes a row and keys become columns. A single object is one row. If the root is an object that wraps rows (for example {\"data\": [...]}), the first array of objects is used."}
+      },
+      {
+        "@type": "Question",
+        "name": "What happens to nested objects and arrays?",
+        "acceptedAnswer": {"@type": "Answer", "text": "By default they are stored as JSON text in a single cell so nothing is lost. You can turn on Flatten nested keys to expand one level of nested objects into dotted column names (for example address.city)."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is convert JSON to Excel online free?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. This tool is free to use in the browser. There is no signup and no file size limit beyond what your browser can handle."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../../">Plain Tools</a>
+      <a href="../../json-formatter/">JSON Formatter</a>
+      <a href="../csv-to-sql/">CSV to SQL</a>
+      <a href="../json-to-sql/">JSON to SQL</a>
+    </nav>
+    <h1>Convert JSON to Excel</h1>
+    <p class="lede">Paste JSON. Preview a spreadsheet. Download .xls or CSV in your browser. Nothing is uploaded.</p>
+  </header>
+  <main>
+    <div class="toolbar">
+      <label class="field">Filename <input id="filename" value="data" spellcheck="false"></label>
+      <label class="field"><input id="flatten" type="checkbox"> Flatten nested keys</label>
+      <button class="primary" id="convert" type="button">Preview</button>
+      <button id="xls" type="button" disabled>Download Excel (.xls)</button>
+      <button id="csv" type="button" disabled>Download CSV</button>
+      <button id="clear" type="button">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder='[{"id":1,"name":"Ada","city":"London"},{"id":2,"name":"Linus","city":"Helsinki"}]'></textarea>
+    <p class="status" id="status">Paste JSON, then preview.</p>
+    <div class="preview-wrap" id="preview-wrap" hidden>
+      <table class="preview" id="preview"></table>
+    </div>
+    <section>
+      <h2>What this tool does</h2>
+      <p>Paste an array of objects, a single object, or an object that wraps rows. Column names are the union of keys in first-seen order. Nested values stay as JSON text unless you enable flatten. Conversion and downloads are local JavaScript — your data never hits a server.</p>
+    </section>
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>Does this JSON to Excel converter upload my data?</summary><p>No. Parsing, table preview, and file generation run in your browser. The JSON never leaves this page. No account, no upload, no install.</p></details>
+      <details><summary>What Excel formats can I download?</summary><p>Excel Spreadsheet XML (.xls), which opens in Microsoft Excel, Google Sheets, LibreOffice, and Numbers, and CSV (.csv) with UTF-8 BOM for Excel-friendly encoding. Both are generated locally.</p></details>
+      <details><summary>What JSON shape works best?</summary><p>An array of objects is ideal — each object becomes a row and keys become columns. A single object is one row. If the root is an object that wraps rows (for example {"data": [...]}), the first array of objects is used.</p></details>
+      <details><summary>What happens to nested objects and arrays?</summary><p>By default they are stored as JSON text in a single cell so nothing is lost. You can turn on Flatten nested keys to expand one level of nested objects into dotted column names (for example address.city).</p></details>
+      <details><summary>Is convert JSON to Excel online free?</summary><p>Yes. This tool is free to use in the browser. There is no signup and no file size limit beyond what your browser can handle.</p></details>
+    </section>
+  </main>
+  <footer>Plain Tools · related: <a href="../json-to-sql/">JSON to SQL</a>, <a href="../csv-to-sql/">CSV to SQL</a>, <a href="../../json-formatter/">JSON Formatter</a>.</footer>
+  <script>
+    const input = document.getElementById('input');
+    const status = document.getElementById('status');
+    const preview = document.getElementById('preview');
+    const previewWrap = document.getElementById('preview-wrap');
+    const btnXls = document.getElementById('xls');
+    const btnCsv = document.getElementById('csv');
+    let state = null;
+
+    function setStatus(msg, kind) {
+      status.textContent = msg;
+      status.className = 'status' + (kind ? ' ' + kind : '');
+    }
+    function isPlainObject(v) {
+      return v !== null && typeof v === 'object' && !Array.isArray(v);
+    }
+    function extractRows(data) {
+      if (Array.isArray(data)) {
+        const objs = data.filter(isPlainObject);
+        if (!objs.length) throw new Error('Need an array of objects, a single object, or an object wrapping an array of objects.');
+        return objs;
+      }
+      if (isPlainObject(data)) {
+        for (const k of Object.keys(data)) {
+          const v = data[k];
+          if (Array.isArray(v) && v.some(isPlainObject)) {
+            const objs = v.filter(isPlainObject);
+            if (objs.length) return objs;
+          }
+        }
+        return [data];
+      }
+      throw new Error('JSON must be an object or an array of objects.');
+    }
+    function flattenRow(row, doFlatten) {
+      if (!doFlatten) return row;
+      const out = {};
+      Object.keys(row).forEach(k => {
+        const v = row[k];
+        if (isPlainObject(v)) {
+          Object.keys(v).forEach(sk => {
+            const sv = v[sk];
+            out[k + '.' + sk] = (isPlainObject(sv) || Array.isArray(sv)) ? JSON.stringify(sv) : sv;
+          });
+        } else {
+          out[k] = v;
+        }
+      });
+      return out;
+    }
+    function cellText(v) {
+      if (v === null || v === undefined) return '';
+      if (typeof v === 'string') return v;
+      if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+      return JSON.stringify(v);
+    }
+    function buildTable(rows, doFlatten) {
+      const flat = rows.map(r => flattenRow(r, doFlatten));
+      const keys = [];
+      const seen = {};
+      flat.forEach(row => {
+        Object.keys(row).forEach(k => {
+          if (!Object.prototype.hasOwnProperty.call(seen, k)) {
+            seen[k] = true;
+            keys.push(k);
+          }
+        });
+      });
+      if (!keys.length) throw new Error('No object keys to turn into columns.');
+      const matrix = flat.map(row => keys.map(k => Object.prototype.hasOwnProperty.call(row, k) ? row[k] : null));
+      return { keys, matrix };
+    }
+    function renderPreview(keys, matrix) {
+      const max = Math.min(matrix.length, 50);
+      let html = '<thead><tr>' + keys.map(k => '<th>' + escapeHtml(k) + '</th>').join('') + '</tr></thead><tbody>';
+      for (let i = 0; i < max; i++) {
+        html += '<tr>' + matrix[i].map(v => '<td>' + escapeHtml(cellText(v)) + '</td>').join('') + '</tr>';
+      }
+      html += '</tbody>';
+      preview.innerHTML = html;
+      previewWrap.hidden = false;
+    }
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function xmlEscape(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function toCsv(keys, matrix) {
+      const esc = (v) => {
+        const t = cellText(v);
+        if (/[",\r\n]/.test(t)) return '"' + t.replace(/"/g, '""') + '"';
+        return t;
+      };
+      const lines = [keys.map(esc).join(',')];
+      matrix.forEach(row => lines.push(row.map(esc).join(',')));
+      return '\uFEFF' + lines.join('\r\n');
+    }
+    function toSpreadsheetXml(keys, matrix) {
+      const rows = [];
+      rows.push('<Row>' + keys.map(k => '<Cell><Data ss:Type="String">' + xmlEscape(k) + '</Data></Cell>').join('') + '</Row>');
+      matrix.forEach(row => {
+        rows.push('<Row>' + row.map(v => {
+          if (v === null || v === undefined || v === '') return '<Cell><Data ss:Type="String"></Data></Cell>';
+          if (typeof v === 'number' && Number.isFinite(v)) {
+            return '<Cell><Data ss:Type="Number">' + v + '</Data></Cell>';
+          }
+          if (typeof v === 'boolean') {
+            return '<Cell><Data ss:Type="Boolean">' + (v ? 1 : 0) + '</Data></Cell>';
+          }
+          return '<Cell><Data ss:Type="String">' + xmlEscape(cellText(v)) + '</Data></Cell>';
+        }).join('') + '</Row>');
+      });
+      return '<?xml version="1.0"?>\n' +
+        '<?mso-application progid="Excel.Sheet"?>\n' +
+        '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n' +
+        ' xmlns:o="urn:schemas-microsoft-com:office:office"\n' +
+        ' xmlns:x="urn:schemas-microsoft-com:office:excel"\n' +
+        ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"\n' +
+        ' xmlns:html="http://www.w3.org/TR/REC-html40">\n' +
+        '<Worksheet ss:Name="Sheet1"><Table>\n' +
+        rows.join('\n') +
+        '\n</Table></Worksheet></Workbook>';
+    }
+    function baseName() {
+      const raw = (document.getElementById('filename').value || 'data').trim() || 'data';
+      return raw.replace(/[^\w.\-]+/g, '_').replace(/^\.+/, '') || 'data';
+    }
+    function download(filename, content, mime) {
+      const blob = new Blob([content], { type: mime });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+    }
+    function convert() {
+      const raw = input.value.trim();
+      if (!raw) throw new Error('Paste JSON first.');
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (err) { throw new Error('Invalid JSON: ' + err.message); }
+      const rows = extractRows(data);
+      const doFlatten = document.getElementById('flatten').checked;
+      const { keys, matrix } = buildTable(rows, doFlatten);
+      state = { keys, matrix };
+      renderPreview(keys, matrix);
+      btnXls.disabled = false;
+      btnCsv.disabled = false;
+      const shown = Math.min(matrix.length, 50);
+      const extra = matrix.length > 50 ? ' (preview shows first 50)' : '';
+      setStatus(matrix.length + ' row' + (matrix.length === 1 ? '' : 's') + ', ' + keys.length + ' column' + (keys.length === 1 ? '' : 's') + extra + '. Nothing uploaded.', 'ok');
+    }
+    document.getElementById('convert').onclick = () => {
+      try { convert(); } catch (err) {
+        state = null;
+        preview.innerHTML = '';
+        previewWrap.hidden = true;
+        btnXls.disabled = true;
+        btnCsv.disabled = true;
+        setStatus(err.message, 'bad');
+      }
+    };
+    btnXls.onclick = () => {
+      if (!state) { setStatus('Preview first.', 'bad'); return; }
+      download(baseName() + '.xls', toSpreadsheetXml(state.keys, state.matrix), 'application/vnd.ms-excel');
+      setStatus('Downloaded Excel (.xls). Opens in Excel, Sheets, LibreOffice, Numbers.');
+    };
+    btnCsv.onclick = () => {
+      if (!state) { setStatus('Preview first.', 'bad'); return; }
+      download(baseName() + '.csv', toCsv(state.keys, state.matrix), 'text/csv;charset=utf-8');
+      setStatus('Downloaded CSV (UTF-8 BOM for Excel).');
+    };
+    document.getElementById('clear').onclick = () => {
+      input.value = '';
+      state = null;
+      preview.innerHTML = '';
+      previewWrap.hidden = true;
+      btnXls.disabled = true;
+      btnCsv.disabled = true;
+      setStatus('Cleared.');
+    };
+  </script>
+</body>
+</html>
