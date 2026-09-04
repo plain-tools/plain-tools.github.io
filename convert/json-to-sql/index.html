@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JSON to SQL — Convert JSON to INSERT Statements</title>
   <meta name="description" content="Paste JSON, get SQL INSERT statements in your browser. Optional CREATE TABLE. MySQL, Postgres, or SQLite. Nothing is uploaded.">
+  <link rel="canonical" href="https://plaintools.vip/convert/json-to-sql/">
   <link rel="stylesheet" href="../../assets/style.css">
   <script type="application/ld+json">
   {
@@ -41,18 +42,22 @@
   </script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="../../">Plain Tools</a>
-      <a href="../../json-formatter/">JSON Formatter</a>
-      <a href="../../convert/csv-to-sql/">CSV to SQL</a>
-      <a href="../../jwt-decoder/">JWT Decoder</a>
-      <a href="../json-to-excel/">JSON to Excel</a>
-    </nav>
-    <h1>JSON to SQL</h1>
-    <p class="lede">Paste JSON. Get INSERT statements in your browser. Nothing is uploaded.</p>
-  </header>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
   <main>
+    <section class="hero">
+      <h1>JSON to SQL</h1>
+      <p class="lede">Paste JSON. Get INSERT statements in your browser. Nothing is uploaded.</p>
+    </section>
     <div class="toolbar">
       <label class="field">Table <input id="table" value="my_table" spellcheck="false"></label>
       <label class="field">Dialect
@@ -83,7 +88,12 @@
       <details><summary>Can I get a CREATE TABLE statement too?</summary><p>Yes. Check CREATE TABLE. Column types are guessed from values: INTEGER, REAL, or TEXT. Nested objects and arrays are TEXT. No account is required.</p></details>
     </section>
   </main>
-  <footer>Plain Tools · related: CSV to SQL, JSON Formatter, JWT Decoder. JSON to Excel is queued, not live.</footer>
+  <footer>
+    <a href="../../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
   <script>
     const input = document.getElementById('input');
     const output = document.getElementById('output');

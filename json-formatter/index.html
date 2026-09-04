@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JSON Formatter Online — Beautify, Minify, Validate</title>
   <meta name="description" content="Paste JSON to format, minify, or validate it in your browser. No upload. No account. Works after the page loads.">
+  <link rel="canonical" href="https://plaintools.vip/json-formatter/">
   <link rel="stylesheet" href="../assets/style.css">
   <script type="application/ld+json">
   {
@@ -41,16 +42,22 @@
   </script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="../">Plain Tools</a>
-      <a href="../jwt-decoder/">JWT Decoder</a>
-      <a href="../convert/csv-to-sql/">CSV to SQL</a>
-    </nav>
-    <h1>JSON Formatter</h1>
-    <p class="lede">Beautify, minify, or validate JSON in your browser. Nothing is uploaded.</p>
-  </header>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
   <main>
+    <section class="hero">
+      <h1>JSON Formatter</h1>
+      <p class="lede">Beautify, minify, or validate JSON in your browser. Nothing is uploaded.</p>
+    </section>
     <div class="toolbar">
       <button class="primary" id="beautify" type="button">Beautify</button>
       <button id="minify" type="button">Minify</button>
@@ -73,7 +80,12 @@
       <details><summary>Do I need an account?</summary><p>No account, no upload, no install. Paste JSON and format it.</p></details>
     </section>
   </main>
-  <footer>Plain Tools · sibling tools land as they ship.</footer>
+  <footer>
+    <a href="../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
   <script>
     const input = document.getElementById('input');
     const status = document.getElementById('status');

@@ -5,33 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Convert JSON to Excel Online Free — Download XLS or CSV</title>
   <meta name="description" content="Paste JSON, preview a table, and download Excel (.xls) or CSV in your browser. Nothing is uploaded. Free, no account.">
-  <style>
-    :root { --bg:#0f1419; --card:#1a222c; --ink:#e7eef7; --muted:#8aa0b5; --line:#2a3644; --acc:#3d9cf0; --ok:#3ecf8e; --bad:#f07178; }
-    * { box-sizing: border-box; }
-    body { margin:0; font: 16px/1.5 ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
-    header, main, footer { max-width: 960px; margin: 0 auto; padding: 1.25rem 1rem; }
-    header nav a { color: var(--acc); text-decoration: none; margin-right: .9rem; }
-    h1 { font-size: 1.8rem; margin: .6rem 0 .35rem; }
-    .lede, footer, .muted { color: var(--muted); }
-    .toolbar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin: 0 0 .75rem; }
-    label.field { display:flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.9rem; }
-    input, select { background:#0b1015; color:var(--ink); border:1px solid var(--line); border-radius: 8px; padding: .4rem .55rem; font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    button { background: var(--card); color: var(--ink); border:1px solid var(--line); border-radius: 8px; padding: .45rem .8rem; cursor:pointer; }
-    button.primary { background: var(--acc); border-color: var(--acc); color:#071018; font-weight: 650; }
-    button:disabled { opacity: .45; cursor: not-allowed; }
-    textarea { width:100%; min-height: 200px; background:#0b1015; color:var(--ink); border:1px solid var(--line); border-radius: 10px; padding: .9rem; font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    .status { min-height: 1.4em; font-size: .9rem; color: var(--muted); margin: .5rem 0 1.25rem; }
-    .status.ok { color: var(--ok); } .status.bad { color: var(--bad); }
-    section { margin: 2rem 0; }
-    h2 { font-size: 1.15rem; }
-    .faq details { background: var(--card); border:1px solid var(--line); border-radius: 10px; padding: .7rem .9rem; margin: .5rem 0; }
-    footer { font-size: .85rem; border-top:1px solid var(--line); }
-    .preview-wrap { overflow:auto; max-height: 320px; border:1px solid var(--line); border-radius: 10px; background: var(--card); }
-    table.preview { border-collapse: collapse; width: 100%; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    table.preview th, table.preview td { border-bottom:1px solid var(--line); padding: .45rem .6rem; text-align:left; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
-    table.preview th { position: sticky; top: 0; background:#222b36; color: var(--ink); }
-    table.preview td { color: var(--muted); }
-  </style>
+  <link rel="canonical" href="https://plaintools.vip/convert/json-to-excel/">
+  <link rel="stylesheet" href="../../assets/style.css">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -67,17 +42,22 @@
   </script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="../../">Plain Tools</a>
-      <a href="../../json-formatter/">JSON Formatter</a>
-      <a href="../csv-to-sql/">CSV to SQL</a>
-      <a href="../json-to-sql/">JSON to SQL</a>
-    </nav>
-    <h1>Convert JSON to Excel</h1>
-    <p class="lede">Paste JSON. Preview a spreadsheet. Download .xls or CSV in your browser. Nothing is uploaded.</p>
-  </header>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
   <main>
+    <section class="hero">
+      <h1>Convert JSON to Excel</h1>
+      <p class="lede">Paste JSON. Preview a spreadsheet. Download .xls or CSV in your browser. Nothing is uploaded.</p>
+    </section>
     <div class="toolbar">
       <label class="field">Filename <input id="filename" value="data" spellcheck="false"></label>
       <label class="field"><input id="flatten" type="checkbox"> Flatten nested keys</label>
@@ -104,7 +84,12 @@
       <details><summary>Is convert JSON to Excel online free?</summary><p>Yes. This tool is free to use in the browser. There is no signup and no file size limit beyond what your browser can handle.</p></details>
     </section>
   </main>
-  <footer>Plain Tools · related: <a href="../json-to-sql/">JSON to SQL</a>, <a href="../csv-to-sql/">CSV to SQL</a>, <a href="../../json-formatter/">JSON Formatter</a>.</footer>
+  <footer>
+    <a href="../../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
   <script>
     const input = document.getElementById('input');
     const status = document.getElementById('status');

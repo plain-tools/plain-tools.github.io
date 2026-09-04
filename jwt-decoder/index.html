@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JWT Decoder — Decode Header and Payload in the Browser</title>
   <meta name="description" content="Paste a JWT to decode its header and payload in your browser. No upload. Decode only, not signature verification.">
+  <link rel="canonical" href="https://plaintools.vip/jwt-decoder/">
   <link rel="stylesheet" href="../assets/style.css">
   <script type="application/ld+json">
   {
@@ -41,16 +42,22 @@
   </script>
 </head>
 <body>
-  <header>
-    <nav>
-      <a href="../">Plain Tools</a>
-      <a href="../json-formatter/">JSON Formatter</a>
-      <a href="../convert/csv-to-sql/">CSV to SQL</a>
-    </nav>
-    <h1>JWT Decoder</h1>
-    <p class="lede">Decode a JSON Web Token in your browser. Nothing is uploaded. Signature is not verified.</p>
-  </header>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
   <main>
+    <section class="hero">
+      <h1>JWT Decoder</h1>
+      <p class="lede">Decode a JSON Web Token in your browser. Nothing is uploaded. Signature is not verified.</p>
+    </section>
     <div class="toolbar">
       <button class="primary" id="decode" type="button">Decode</button>
       <button id="clear" type="button">Clear</button>
@@ -81,7 +88,12 @@
       <details><summary>Do I need an account?</summary><p>No account, no upload, no install. Paste a JWT and decode it.</p></details>
     </section>
   </main>
-  <footer>Plain Tools · decode only, not verification.</footer>
+  <footer>
+    <a href="../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
   <script>
     const input = document.getElementById('input');
     const status = document.getElementById('status');
