@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Base64 Encoder / Decoder Online (Free)</title>
+  <meta name="description" content="Base64 encoder and decoder online. Encode text or decode Base64 in your browser. UTF-8 safe. No upload. No account. Copy ready for APIs and tokens.">
+  <link rel="canonical" href="https://plaintools.vip/base64-encoder/">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .panels { display: grid; grid-template-columns: 1fr; gap: 0.85rem; margin: 0 0 0.25rem; }
+    @media (min-width: 720px) { .panels { grid-template-columns: 1fr 1fr; } }
+    .panels .panel label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0 0 0.35rem;
+      font-family: var(--sans);
+      font-weight: 600;
+    }
+    .panels textarea { min-height: 200px; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a Base64 encoder?",
+        "acceptedAnswer": {"@type": "Answer", "text": "A Base64 encoder converts binary or text data into an ASCII string using 64 printable characters (A–Z, a–z, 0–9, +, /) plus optional = padding. This page encodes UTF-8 text to Base64 and decodes Base64 back to text in your browser."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does this Base64 tool send my data to a server?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Encoding and decoding run entirely in your browser with TextEncoder/TextDecoder and btoa/atob (or a Uint8Array fallback). Nothing is uploaded or stored on a server."}
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between standard Base64 and Base64URL?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Standard Base64 uses + and / and often = padding. Base64URL (used in JWTs) replaces + with - and / with _, and usually omits padding. This tool can encode or decode either variant."}
+      },
+      {
+        "@type": "Question",
+        "name": "Why does my Base64 decode fail?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Common causes: wrong alphabet (standard vs URL-safe), missing or extra padding, whitespace or line breaks in the middle of the string, or binary data that is not valid UTF-8 text. This decoder strips whitespace and can restore padding before decoding."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is Base64 encryption?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Base64 is an encoding, not encryption. Anyone can decode it. Do not treat Base64 as a way to hide secrets."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <h1>Encode and decode Base64</h1>
+      <p class="lede">Convert UTF-8 text to Base64 or back in your browser. Standard and Base64URL. No upload. No account.</p>
+    </section>
+    <div class="tool-head">
+      <div class="toolbar">
+        <label class="field">Alphabet
+          <select id="alphabet">
+            <option value="standard" selected>Standard (+ /)</option>
+            <option value="url">Base64URL (- _)</option>
+          </select>
+        </label>
+        <button class="primary" id="encode" type="button">Encode text</button>
+        <button class="primary" id="decode" type="button">Decode Base64</button>
+        <button id="swap" type="button">Swap</button>
+        <button id="copy-out" type="button">Copy output</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>Encode · Decode</li>
+        <li>UTF-8 safe</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
+    </div>
+    <div class="panels">
+      <div class="panel">
+        <label for="input">Input</label>
+        <textarea id="input" spellcheck="false" placeholder="Type or paste text to encode, or Base64 to decode"></textarea>
+      </div>
+      <div class="panel">
+        <label for="output">Output</label>
+        <textarea id="output" spellcheck="false" readonly placeholder="Result appears here"></textarea>
+      </div>
+    </div>
+    <p class="status" id="status">Ready. Encode text or decode Base64 locally.</p>
+
+    <section>
+      <h2>What this tool does</h2>
+      <p>This Base64 encoder / decoder converts UTF-8 text to Base64 and back. Use it for HTTP Basic headers, data URLs, JWT-style URL-safe strings, and quick debugging. Everything stays in the browser — useful when you should not paste tokens into a third-party site.</p>
+    </section>
+
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../jwt-decoder/">JWT Decoder</a>
+        <a href="../uuid-generator/">UUID Generator</a>
+        <a href="../json-formatter/">JSON Formatter</a>
+      </p>
+    </section>
+
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>What is a Base64 encoder?</summary><p>A Base64 encoder converts binary or text data into an ASCII string using 64 printable characters (A–Z, a–z, 0–9, +, /) plus optional <code>=</code> padding. This page encodes UTF-8 text to Base64 and decodes Base64 back to text in your browser.</p></details>
+      <details><summary>Does this Base64 tool send my data to a server?</summary><p>No. Encoding and decoding run entirely in your browser with <code>TextEncoder</code>/<code>TextDecoder</code> and <code>btoa</code>/<code>atob</code> (or a Uint8Array fallback). Nothing is uploaded or stored on a server.</p></details>
+      <details><summary>What is the difference between standard Base64 and Base64URL?</summary><p>Standard Base64 uses <code>+</code> and <code>/</code> and often <code>=</code> padding. Base64URL (used in JWTs) replaces <code>+</code> with <code>-</code> and <code>/</code> with <code>_</code>, and usually omits padding. This tool can encode or decode either variant.</p></details>
+      <details><summary>Why does my Base64 decode fail?</summary><p>Common causes: wrong alphabet (standard vs URL-safe), missing or extra padding, whitespace or line breaks in the middle of the string, or binary data that is not valid UTF-8 text. This decoder strips whitespace and can restore padding before decoding.</p></details>
+      <details><summary>Is Base64 encryption?</summary><p>No. Base64 is an encoding, not encryption. Anyone can decode it. Do not treat Base64 as a way to hide secrets.</p></details>
+    </section>
+  </main>
+  <footer>
+    <a href="../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const alphabetEl = document.getElementById('alphabet');
+
+    function setStatus(msg, kind) {
+      status.textContent = msg;
+      status.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function bytesToBase64(bytes) {
+      let binary = '';
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+      }
+      return btoa(binary);
+    }
+
+    function base64ToBytes(b64) {
+      const binary = atob(b64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+
+    function toUrlSafe(b64) {
+      return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function fromUrlSafe(b64url) {
+      let s = b64url.replace(/-/g, '+').replace(/_/g, '/');
+      const pad = s.length % 4;
+      if (pad === 2) s += '==';
+      else if (pad === 3) s += '=';
+      else if (pad === 1) throw new Error('Invalid Base64URL length.');
+      return s;
+    }
+
+    function encode() {
+      const text = input.value;
+      const enc = new TextEncoder();
+      let b64 = bytesToBase64(enc.encode(text));
+      if (alphabetEl.value === 'url') b64 = toUrlSafe(b64);
+      output.value = b64;
+      setStatus('Encoded ' + text.length + ' character' + (text.length === 1 ? '' : 's') + ' to Base64.', 'ok');
+    }
+
+    function decode() {
+      let raw = input.value.replace(/\s+/g, '');
+      if (!raw) {
+        output.value = '';
+        setStatus('Nothing to decode.', 'bad');
+        return;
+      }
+      try {
+        let std = raw;
+        if (alphabetEl.value === 'url' || /[-_]/.test(raw)) {
+          std = fromUrlSafe(raw);
+        } else {
+          const pad = std.length % 4;
+          if (pad === 2) std += '==';
+          else if (pad === 3) std += '=';
+          else if (pad === 1) throw new Error('Invalid Base64 length.');
+        }
+        const bytes = base64ToBytes(std);
+        const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+        output.value = text;
+        setStatus('Decoded Base64 to UTF-8 text.', 'ok');
+      } catch (err) {
+        output.value = '';
+        setStatus('Decode failed: ' + (err && err.message ? err.message : String(err)), 'bad');
+      }
+    }
+
+    document.getElementById('encode').onclick = function () {
+      try { encode(); } catch (err) { setStatus(err.message, 'bad'); }
+    };
+    document.getElementById('decode').onclick = function () { decode(); };
+    document.getElementById('swap').onclick = function () {
+      const a = input.value;
+      input.value = output.value;
+      output.value = a;
+      setStatus('Swapped input and output.', '');
+    };
+    document.getElementById('copy-out').onclick = async function () {
+      if (!output.value) {
+        setStatus('Nothing to copy yet.', 'bad');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(output.value);
+        setStatus('Copied output.', 'ok');
+      } catch (err) {
+        setStatus('Copy failed: ' + err.message, 'bad');
+      }
+    };
+    document.getElementById('clear').onclick = function () {
+      input.value = '';
+      output.value = '';
+      setStatus('Cleared.', '');
+    };
+  </script>
+</body>
+</html>

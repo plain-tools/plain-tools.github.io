@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UUID Generator — Create UUID v4 Online (Free)</title>
+  <meta name="description" content="UUID generator online. Create one or many UUID v4 identifiers in your browser with crypto.randomUUID. No upload. No account. Copy ready for APIs and databases.">
+  <link rel="canonical" href="https://plaintools.vip/uuid-generator/">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    label.field.stacked { flex-direction: column; align-items: stretch; gap: 0.3rem; }
+    .latest-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0.9rem 1.1rem;
+      margin: 0 0 0.85rem;
+      font-family: var(--sans);
+    }
+    .latest-card .label { display: block; font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+    .latest-card strong {
+      display: block;
+      margin-top: 0.25rem;
+      font: 1.05rem/1.45 var(--mono);
+      color: var(--acc);
+      word-break: break-all;
+    }
+    #output { min-height: 200px; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a UUID generator?",
+        "acceptedAnswer": {"@type": "Answer", "text": "A UUID generator creates Universally Unique Identifiers (also called GUIDs). This page generates UUID version 4 values using the browser's crypto.randomUUID API when available, or a secure random fallback that sets the RFC 4122 version and variant bits."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does this UUID generator send anything to a server?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. UUIDs are created entirely in your browser. Nothing is uploaded, logged, or stored on a server."}
+      },
+      {
+        "@type": "Question",
+        "name": "Is UUID v4 the same as a GUID?",
+        "acceptedAnswer": {"@type": "Answer", "text": "GUID usually means the same 128-bit identifier family as UUID. UUID v4 is a random UUID (version 4). This tool outputs the common 8-4-4-4-12 lowercase hex form with hyphens."}
+      },
+      {
+        "@type": "Question",
+        "name": "Are generated UUIDs guaranteed unique?",
+        "acceptedAnswer": {"@type": "Answer", "text": "UUID v4 collision risk is astronomically low for normal app use when the random source is cryptographically strong. This page uses crypto.getRandomValues / crypto.randomUUID when the browser provides them. It does not contact a central registry."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I generate multiple UUIDs at once?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Choose a count from 1 to 100, then Generate. Each line is one UUID. Use Copy all to put the list on the clipboard."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <h1>Create UUID v4 identifiers</h1>
+      <p class="lede">Generate one or many UUIDs in your browser. No upload. No account. Copy ready for APIs, databases, and tests.</p>
+    </section>
+    <div class="tool-head">
+      <div class="toolbar">
+        <label class="field">Count
+          <input id="count" type="number" min="1" max="100" value="1" inputmode="numeric">
+        </label>
+        <label class="field">Format
+          <select id="format">
+            <option value="hyphen" selected>Standard (with hyphens)</option>
+            <option value="plain">No hyphens</option>
+            <option value="upper">Uppercase with hyphens</option>
+          </select>
+        </label>
+        <button class="primary" id="generate" type="button">Generate UUID</button>
+        <button id="copy-one" type="button">Copy first</button>
+        <button id="copy-all" type="button">Copy all</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>UUID v4</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
+    </div>
+    <div class="latest-card" id="latest-wrap" hidden>
+      <span class="label">Latest</span>
+      <strong id="latest"></strong>
+    </div>
+    <textarea id="output" spellcheck="false" readonly placeholder="Generated UUIDs appear here"></textarea>
+    <p class="status" id="status">Ready. Click Generate UUID for a UUID v4.</p>
+
+    <section>
+      <h2>What this tool does</h2>
+      <p>This UUID generator creates random UUID version 4 values for primary keys, request IDs, and test fixtures. Generation runs locally with the Web Crypto API. Prefer this over sequential IDs when you need opaque, collision-resistant identifiers without a central counter.</p>
+    </section>
+
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../base64-encoder/">Base64 Encoder</a>
+        <a href="../json-formatter/">JSON Formatter</a>
+        <a href="../jwt-decoder/">JWT Decoder</a>
+      </p>
+    </section>
+
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>What is a UUID generator?</summary><p>A UUID generator creates Universally Unique Identifiers (also called GUIDs). This page generates UUID version 4 values using the browser's <code>crypto.randomUUID</code> API when available, or a secure random fallback that sets the RFC 4122 version and variant bits.</p></details>
+      <details><summary>Does this UUID generator send anything to a server?</summary><p>No. UUIDs are created entirely in your browser. Nothing is uploaded, logged, or stored on a server.</p></details>
+      <details><summary>Is UUID v4 the same as a GUID?</summary><p>GUID usually means the same 128-bit identifier family as UUID. UUID v4 is a random UUID (version 4). This tool outputs the common 8-4-4-4-12 lowercase hex form with hyphens.</p></details>
+      <details><summary>Are generated UUIDs guaranteed unique?</summary><p>UUID v4 collision risk is astronomically low for normal app use when the random source is cryptographically strong. This page uses <code>crypto.getRandomValues</code> / <code>crypto.randomUUID</code> when the browser provides them. It does not contact a central registry.</p></details>
+      <details><summary>Can I generate multiple UUIDs at once?</summary><p>Yes. Choose a count from 1 to 100, then Generate. Each line is one UUID. Use Copy all to put the list on the clipboard.</p></details>
+    </section>
+  </main>
+  <footer>
+    <a href="../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
+  <script>
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const countEl = document.getElementById('count');
+    const formatEl = document.getElementById('format');
+    const latest = document.getElementById('latest');
+    const latestWrap = document.getElementById('latest-wrap');
+
+    function setStatus(msg, kind) {
+      status.textContent = msg;
+      status.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function uuidV4() {
+      if (window.crypto && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+      if (!window.crypto || typeof crypto.getRandomValues !== 'function') {
+        throw new Error('Secure random UUID is not available in this browser.');
+      }
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const hex = Array.from(bytes, function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+      return (
+        hex.slice(0, 8) + '-' +
+        hex.slice(8, 12) + '-' +
+        hex.slice(12, 16) + '-' +
+        hex.slice(16, 20) + '-' +
+        hex.slice(20)
+      );
+    }
+
+    function formatUuid(id) {
+      const mode = formatEl.value;
+      if (mode === 'plain') return id.replace(/-/g, '');
+      if (mode === 'upper') return id.toUpperCase();
+      return id;
+    }
+
+    function generate() {
+      let n = parseInt(countEl.value, 10);
+      if (!Number.isFinite(n) || n < 1) n = 1;
+      if (n > 100) n = 100;
+      countEl.value = String(n);
+      const lines = [];
+      for (let i = 0; i < n; i++) lines.push(formatUuid(uuidV4()));
+      output.value = lines.join('\n');
+      latest.textContent = lines[0];
+      latestWrap.hidden = false;
+      setStatus('Generated ' + n + ' UUID v4' + (n === 1 ? '' : 's') + '.', 'ok');
+    }
+
+    async function copyText(text, label) {
+      if (!text) {
+        setStatus('Nothing to copy yet. Generate first.', 'bad');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        setStatus(label, 'ok');
+      } catch (err) {
+        setStatus('Copy failed: ' + err.message, 'bad');
+      }
+    }
+
+    document.getElementById('generate').onclick = function () {
+      try { generate(); }
+      catch (err) { setStatus(err.message, 'bad'); }
+    };
+    document.getElementById('copy-one').onclick = function () {
+      const first = output.value.split('\n').filter(Boolean)[0] || '';
+      copyText(first, 'Copied first UUID.');
+    };
+    document.getElementById('copy-all').onclick = function () {
+      copyText(output.value, 'Copied all UUIDs.');
+    };
+    document.getElementById('clear').onclick = function () {
+      output.value = '';
+      latest.textContent = '';
+      latestWrap.hidden = true;
+      setStatus('Cleared.', '');
+    };
+
+    try { generate(); }
+    catch (err) { setStatus(err.message, 'bad'); }
+  </script>
+</body>
+</html>
