@@ -55,21 +55,37 @@
 
   <main>
     <section class="hero">
-      <h1>JSON Formatter</h1>
-      <p class="lede">Beautify, minify, or validate JSON in your browser. Nothing is uploaded.</p>
+      <h1>Beautify, minify, and validate JSON</h1>
+      <p class="lede">Paste JSON and format it here. One job, in your browser—nothing is uploaded.</p>
     </section>
-    <div class="toolbar">
-      <button class="primary" id="beautify" type="button">Beautify</button>
-      <button id="minify" type="button">Minify</button>
-      <button id="validate" type="button">Validate</button>
-      <button id="copy" type="button">Copy</button>
-      <button id="clear" type="button">Clear</button>
+    <div class="tool-head">
+      <div class="toolbar">
+        <button class="primary" id="beautify" type="button">Beautify JSON</button>
+        <button id="minify" type="button">Minify JSON</button>
+        <button id="validate" type="button">Validate JSON</button>
+        <button id="copy" type="button">Copy result</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>Beautify · Minify · Validate</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
     </div>
     <textarea id="input" spellcheck="false" placeholder='{"hello": "world"}'></textarea>
     <p class="status" id="status">Paste JSON, then beautify or validate.</p>
     <section>
       <h2>What this tool does</h2>
       <p>Paste a JSON string, then beautify it with 2-space indents, minify it for payloads, or check whether it parses. Parsing uses the browser’s built-in JSON.parse, so the result matches what JavaScript will accept.</p>
+    </section>
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../jwt-decoder/">JWT Decoder</a>
+        <a href="../convert/json-to-sql/">JSON to SQL</a>
+        <a href="../convert/json-to-excel/">JSON to Excel</a>
+      </p>
     </section>
     <section class="faq">
       <h2>FAQ</h2>

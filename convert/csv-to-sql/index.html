@@ -55,29 +55,46 @@
 
   <main>
     <section class="hero">
-      <h1>CSV to SQL</h1>
-      <p class="lede">Paste a CSV. Get INSERT statements in your browser. Nothing is uploaded.</p>
+      <h1>Turn a CSV into SQL INSERT statements</h1>
+      <p class="lede">Paste a CSV and generate MySQL, Postgres, or SQLite SQL in your browser. Nothing is uploaded.</p>
     </section>
-    <div class="toolbar">
-      <label class="field">Table <input id="table" value="my_table" spellcheck="false"></label>
-      <label class="field">Dialect
-        <select id="dialect">
-          <option value="mysql">MySQL</option>
-          <option value="postgres">PostgreSQL</option>
-          <option value="sqlite">SQLite</option>
-        </select>
-      </label>
-      <label class="field"><input id="ddl" type="checkbox" checked> CREATE TABLE</label>
-      <button class="primary" id="convert" type="button">Convert</button>
-      <button id="copy" type="button">Copy SQL</button>
-      <button id="clear" type="button">Clear</button>
+    <div class="tool-head">
+      <div class="toolbar">
+        <label class="field">Table <input id="table" value="my_table" spellcheck="false"></label>
+        <label class="field">Dialect
+          <select id="dialect">
+            <option value="mysql">MySQL</option>
+            <option value="postgres">PostgreSQL</option>
+            <option value="sqlite">SQLite</option>
+          </select>
+        </label>
+        <label class="field"><input id="ddl" type="checkbox" checked> CREATE TABLE</label>
+        <button class="primary" id="convert" type="button">Generate SQL</button>
+        <button id="copy" type="button">Copy SQL</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>INSERT · optional CREATE TABLE</li>
+        <li>MySQL · Postgres · SQLite</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
     </div>
     <textarea id="input" spellcheck="false" placeholder='id,name,active&#10;1,Ada,true&#10;2,Linus,false'></textarea>
-    <p class="status" id="status">Paste CSV, then convert.</p>
+    <p class="status" id="status">Paste CSV, then generate SQL.</p>
     <textarea id="output" spellcheck="false" placeholder="SQL lands here"></textarea>
     <section>
       <h2>What this tool does</h2>
       <p>The first row is treated as column names. Each following row becomes an INSERT. Quoted CSV fields, commas inside quotes, and doubled quotes are handled. Conversion is local JavaScript, not a server job.</p>
+    </section>
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../json-to-sql/">JSON to SQL</a>
+        <a href="../json-to-excel/">JSON to Excel</a>
+        <a href="../../json-formatter/">JSON Formatter</a>
+      </p>
     </section>
     <section class="faq">
       <h2>FAQ</h2>

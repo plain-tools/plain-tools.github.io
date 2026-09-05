@@ -55,12 +55,21 @@
 
   <main>
     <section class="hero">
-      <h1>JWT Decoder</h1>
-      <p class="lede">Decode a JSON Web Token in your browser. Nothing is uploaded. Signature is not verified.</p>
+      <h1>Decode a JWT header and payload</h1>
+      <p class="lede">Paste a token to inspect claims in your browser. Decode only—signature is not verified. Nothing is uploaded.</p>
     </section>
-    <div class="toolbar">
-      <button class="primary" id="decode" type="button">Decode</button>
-      <button id="clear" type="button">Clear</button>
+    <div class="tool-head">
+      <div class="toolbar">
+        <button class="primary" id="decode" type="button">Decode JWT</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>Header + payload decode</li>
+        <li>No verify claim</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
     </div>
     <textarea id="input" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature"></textarea>
     <p class="status" id="status">Paste a JWT, then decode.</p>
@@ -78,6 +87,13 @@
     <section>
       <h2>What this tool does</h2>
       <p>A JWT is three base64url segments: header, payload, and signature. This page decodes the first two and pretty-prints the JSON. It does not check the signature, so a decoded token is not a verified token.</p>
+    </section>
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../json-formatter/">JSON Formatter</a>
+        <a href="../convert/json-to-sql/">JSON to SQL</a>
+      </p>
     </section>
     <section class="faq">
       <h2>FAQ</h2>

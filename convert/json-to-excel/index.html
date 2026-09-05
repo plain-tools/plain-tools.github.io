@@ -55,16 +55,24 @@
 
   <main>
     <section class="hero">
-      <h1>Convert JSON to Excel</h1>
-      <p class="lede">Paste JSON. Preview a spreadsheet. Download .xls or CSV in your browser. Nothing is uploaded.</p>
+      <h1>Convert JSON to Excel or CSV</h1>
+      <p class="lede">Paste JSON, preview a table, then download .xls or CSV in your browser. Nothing is uploaded.</p>
     </section>
-    <div class="toolbar">
-      <label class="field">Filename <input id="filename" value="data" spellcheck="false"></label>
-      <label class="field"><input id="flatten" type="checkbox"> Flatten nested keys</label>
-      <button class="primary" id="convert" type="button">Preview</button>
-      <button id="xls" type="button" disabled>Download Excel (.xls)</button>
-      <button id="csv" type="button" disabled>Download CSV</button>
-      <button id="clear" type="button">Clear</button>
+    <div class="tool-head">
+      <div class="toolbar">
+        <label class="field">Filename <input id="filename" value="data" spellcheck="false"></label>
+        <label class="field"><input id="flatten" type="checkbox"> Flatten nested keys</label>
+        <button class="primary" id="convert" type="button">Preview table</button>
+        <button id="xls" type="button" disabled>Download Excel (.xls)</button>
+        <button id="csv" type="button" disabled>Download CSV</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>Preview · .xls · CSV</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
     </div>
     <textarea id="input" spellcheck="false" placeholder='[{"id":1,"name":"Ada","city":"London"},{"id":2,"name":"Linus","city":"Helsinki"}]'></textarea>
     <p class="status" id="status">Paste JSON, then preview.</p>
@@ -74,6 +82,14 @@
     <section>
       <h2>What this tool does</h2>
       <p>Paste an array of objects, a single object, or an object that wraps rows. Column names are the union of keys in first-seen order. Nested values stay as JSON text unless you enable flatten. Conversion and downloads are local JavaScript — your data never hits a server.</p>
+    </section>
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../json-to-sql/">JSON to SQL</a>
+        <a href="../csv-to-sql/">CSV to SQL</a>
+        <a href="../../json-formatter/">JSON Formatter</a>
+      </p>
     </section>
     <section class="faq">
       <h2>FAQ</h2>
