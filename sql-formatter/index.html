@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL Formatter — Pretty Print SQL Online (Free)</title>
+  <meta name="description" content="SQL formatter online. Paste SQL to pretty-print or minify it in your browser. Optional dialect keywords for Standard, PostgreSQL, MySQL, and SQLite. No upload. No account.">
+  <link rel="canonical" href="https://plaintools.vip/sql-formatter/">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .sql-form {
+      display: grid;
+      gap: 0.85rem;
+      margin: 0 0 0.85rem;
+    }
+    .sql-row {
+      display: grid;
+      gap: 0.5rem;
+    }
+    @media (min-width: 640px) {
+      .sql-row.opts {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+    }
+    .sql-row label.block {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0 0 0.35rem;
+      font-family: var(--sans);
+      font-weight: 600;
+    }
+    .sql-row select {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      color: var(--ink);
+      min-width: 11rem;
+    }
+    .sql-row select:focus,
+    #input:focus {
+      outline: 2px solid var(--acc-border);
+      outline-offset: 1px;
+      border-color: var(--acc);
+    }
+    #input {
+      width: 100%;
+      min-height: 280px;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.55;
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--input-bg);
+      color: var(--ink);
+      resize: vertical;
+      box-shadow: var(--shadow);
+    }
+    .indent-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      align-items: center;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+    .indent-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .indent-row input[type="number"] {
+      width: 3.5rem;
+      font-family: var(--mono);
+      font-size: 0.88rem;
+      padding: 0.35rem 0.45rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--ink);
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is an SQL formatter?",
+        "acceptedAnswer": {"@type": "Answer", "text": "An SQL formatter pretty-prints SQL so keywords, clauses, and indentation are easier to read. This page runs entirely in your browser: paste a query, choose a dialect keyword set if you want, and format or minify without uploading anything."}
+      },
+      {
+        "@type": "Question",
+        "name": "Does this SQL formatter upload my query?",
+        "acceptedAnswer": {"@type": "Answer", "text": "No. Formatting and minifying run in your browser with JavaScript. Your SQL never leaves this page."}
+      },
+      {
+        "@type": "Question",
+        "name": "Which SQL dialects does this tool support?",
+        "acceptedAnswer": {"@type": "Answer", "text": "The dialect toggle mainly changes which keywords are uppercased and treated as clause breaks: Standard SQL, PostgreSQL (e.g. ILIKE, RETURNING), MySQL (e.g. LIMIT/OFFSET style helpers), and SQLite. It is a formatter, not a full parser or validator for every vendor dialect."}
+      },
+      {
+        "@type": "Question",
+        "name": "Will formatting change how my query runs?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Pretty-print and minify only reshape whitespace and keyword casing outside of strings and quoted identifiers. String literals and comments are preserved. Always review the result before running it in production."}
+      },
+      {
+        "@type": "Question",
+        "name": "Can I minify SQL as well as pretty-print it?",
+        "acceptedAnswer": {"@type": "Answer", "text": "Yes. Format adds line breaks and indentation around common clauses. Minify collapses insignificant whitespace while keeping string and comment contents intact."}
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="site-top">
+    <div class="site-top-inner">
+      <a class="brand" href="../">plaintools<span>.tools</span></a>
+      <nav class="nav">
+        <a href="../">Tools</a>
+        <a href="https://finance.plaintools.vip/">Finance</a>
+        <a href="https://compare.plaintools.vip/">Compare</a>
+      </nav>
+    </div>
+  </div>
+
+  <main>
+    <section class="hero">
+      <h1>SQL formatter</h1>
+      <p class="lede">Paste SQL to pretty-print or minify it in your browser. Optional dialect keyword sets for Standard, PostgreSQL, MySQL, and SQLite. No upload. No account.</p>
+    </section>
+    <div class="tool-head">
+      <div class="toolbar">
+        <button class="primary" id="format" type="button">Format SQL</button>
+        <button id="minify" type="button">Minify</button>
+        <button id="copy" type="button">Copy result</button>
+        <button id="clear" type="button">Clear</button>
+      </div>
+      <ul class="chips" aria-label="Trust">
+        <li>Pretty-print · Minify</li>
+        <li>Dialect toggle</li>
+        <li>Runs in your browser</li>
+        <li>Nothing uploaded</li>
+        <li>No account</li>
+      </ul>
+    </div>
+
+    <div class="sql-form">
+      <div class="sql-row opts">
+        <div>
+          <label class="block" for="dialect">Dialect keywords</label>
+          <select id="dialect" aria-label="SQL dialect">
+            <option value="standard" selected>Standard SQL</option>
+            <option value="postgresql">PostgreSQL</option>
+            <option value="mysql">MySQL</option>
+            <option value="sqlite">SQLite</option>
+          </select>
+        </div>
+        <div class="indent-row" aria-label="Indent options">
+          <label>Indent spaces <input id="indent" type="number" min="1" max="8" value="2"></label>
+          <label><input id="upper" type="checkbox" checked> Uppercase keywords</label>
+        </div>
+      </div>
+      <div class="sql-row">
+        <label class="block" for="input">SQL</label>
+        <textarea id="input" spellcheck="false" placeholder="SELECT id, name FROM users WHERE active = 1;">SELECT u.id, u.name, o.total FROM users u JOIN orders o ON o.user_id = u.id WHERE u.active = 1 AND o.total &gt; 100 ORDER BY o.total DESC LIMIT 25;</textarea>
+      </div>
+    </div>
+
+    <p class="status" id="status">Paste SQL, then format or minify.</p>
+
+    <section>
+      <h2>What this tool does</h2>
+      <p>This SQL formatter tokenizes your query in the browser, preserves string literals and comments, uppercases recognized keywords when enabled, and inserts line breaks before common clauses (<code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>JOIN</code>, <code>GROUP BY</code>, and similar). Use the dialect toggle when you want PostgreSQL-, MySQL-, or SQLite-specific keywords treated the same way. Prefer a local formatter when the query should not leave your machine.</p>
+    </section>
+
+    <section>
+      <h2>Related tools</h2>
+      <p class="related">
+        <a href="../json-formatter/">JSON Formatter</a>
+        <a href="../convert/json-to-sql/">JSON to SQL</a>
+        <a href="../convert/csv-to-sql/">CSV to SQL</a>
+        <a href="../regex-tester/">Regex Tester</a>
+      </p>
+    </section>
+
+    <section class="faq">
+      <h2>FAQ</h2>
+      <details><summary>What is an SQL formatter?</summary><p>An SQL formatter pretty-prints SQL so keywords, clauses, and indentation are easier to read. This page runs entirely in your browser: paste a query, choose a dialect keyword set if you want, and format or minify without uploading anything.</p></details>
+      <details><summary>Does this SQL formatter upload my query?</summary><p>No. Formatting and minifying run in your browser with JavaScript. Your SQL never leaves this page.</p></details>
+      <details><summary>Which SQL dialects does this tool support?</summary><p>The dialect toggle mainly changes which keywords are uppercased and treated as clause breaks: Standard SQL, PostgreSQL (e.g. <code>ILIKE</code>, <code>RETURNING</code>), MySQL, and SQLite. It is a formatter, not a full parser or validator for every vendor dialect.</p></details>
+      <details><summary>Will formatting change how my query runs?</summary><p>Pretty-print and minify only reshape whitespace and keyword casing outside of strings and quoted identifiers. String literals and comments are preserved. Always review the result before running it in production.</p></details>
+      <details><summary>Can I minify SQL as well as pretty-print it?</summary><p>Yes. Format adds line breaks and indentation around common clauses. Minify collapses insignificant whitespace while keeping string and comment contents intact.</p></details>
+    </section>
+  </main>
+  <footer>
+    <a href="../">Tools</a> ·
+    <a href="https://finance.plaintools.vip/">Finance</a> ·
+    <a href="https://compare.plaintools.vip/">Compare</a>
+    <p>Tools run in your browser. Nothing is uploaded.</p>
+  </footer>
+  <script>
+(function () {
+  const input = document.getElementById('input');
+  const status = document.getElementById('status');
+  const dialectEl = document.getElementById('dialect');
+  const indentEl = document.getElementById('indent');
+  const upperEl = document.getElementById('upper');
+
+  const BASE_KEYWORDS = [
+    'ADD','ALL','ALTER','AND','ANY','AS','ASC','BETWEEN','BY','CASE','CAST','CHECK','COLUMN',
+    'CONSTRAINT','CREATE','CROSS','CURRENT_DATE','CURRENT_TIME','CURRENT_TIMESTAMP','DATABASE',
+    'DEFAULT','DELETE','DESC','DISTINCT','DROP','ELSE','END','EXCEPT','EXISTS','FALSE','FOREIGN',
+    'FROM','FULL','GRANT','GROUP','HAVING','IN','INDEX','INNER','INSERT','INTERSECT','INTO','IS',
+    'JOIN','KEY','LEFT','LIKE','LIMIT','NOT','NULL','NULLS','OFFSET','ON','OR','ORDER','OUTER',
+    'OVER','PARTITION','PRIMARY','REFERENCES','RIGHT','ROLLBACK','ROW','ROWS','SELECT','SET',
+    'SOME','TABLE','THEN','TRUE','TRUNCATE','UNION','UNIQUE','UPDATE','USING','VALUES','VIEW',
+    'WHEN','WHERE','WITH','WITHOUT'
+  ];
+  const DIALECT_EXTRA = {
+    standard: [],
+    postgresql: ['ILIKE','RETURNING','LATERAL','JSONB','JSON','SERIAL','BIGSERIAL','CONFLICT','EXCLUDED','WINDOW','FILTER','STRICT'],
+    mysql: ['REPLACE','DUPLICATE','IGNORE','STRAIGHT_JOIN','FORCE','UNLOCK','AUTO_INCREMENT','UNSIGNED','ZEROFILL','REGEXP','RLIKE'],
+    sqlite: ['GLOB','MATCH','PRAGMA','VACUUM','ROWID','AUTOINCREMENT','ATTACH','DETACH','REPLACE']
+  };
+
+  // Newline + outdent/indent before these (single-word or first word of multi-word)
+  const BREAK_BEFORE = {
+    SELECT: 1, FROM: 1, WHERE: 1, HAVING: 1, LIMIT: 1, OFFSET: 1, RETURNING: 1,
+    UNION: 1, EXCEPT: 1, INTERSECT: 1, INSERT: 1, UPDATE: 1, DELETE: 1, SET: 1, VALUES: 1, WITH: 1,
+    JOIN: 1, AND: 1, OR: 1, ON: 1
+  };
+  const MULTI_BREAK = {
+    'GROUP BY': 1, 'ORDER BY': 1, 'INSERT INTO': 1, 'DELETE FROM': 1,
+    'INNER JOIN': 1, 'LEFT JOIN': 1, 'RIGHT JOIN': 1, 'FULL JOIN': 1, 'CROSS JOIN': 1, 'OUTER JOIN': 1,
+    'LEFT OUTER JOIN': 1, 'RIGHT OUTER JOIN': 1, 'FULL OUTER JOIN': 1, 'UNION ALL': 1
+  };
+
+  function setStatus(msg, kind) {
+    status.textContent = msg;
+    status.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function keywordSet() {
+    const extra = DIALECT_EXTRA[dialectEl.value] || [];
+    const set = Object.create(null);
+    BASE_KEYWORDS.concat(extra).forEach(function (k) { set[k] = true; });
+    return set;
+  }
+
+  function tokenize(sql) {
+    const tokens = [];
+    let i = 0;
+    const n = sql.length;
+    while (i < n) {
+      const c = sql[i];
+      if (c === '-' && sql[i + 1] === '-') {
+        let j = i + 2;
+        while (j < n && sql[j] !== '\n') j++;
+        tokens.push({ type: 'comment', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if (c === '/' && sql[i + 1] === '*') {
+        let j = i + 2;
+        while (j < n && !(sql[j] === '*' && sql[j + 1] === '/')) j++;
+        j = Math.min(n, j + 2);
+        tokens.push({ type: 'comment', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if (c === '\'') {
+        let j = i + 1;
+        while (j < n) {
+          if (sql[j] === '\'') {
+            if (sql[j + 1] === '\'') { j += 2; continue; }
+            j++;
+            break;
+          }
+          j++;
+        }
+        tokens.push({ type: 'string', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if (c === '"' || c === '`') {
+        const q = c;
+        let j = i + 1;
+        while (j < n) {
+          if (sql[j] === q) {
+            if (sql[j + 1] === q) { j += 2; continue; }
+            j++;
+            break;
+          }
+          j++;
+        }
+        tokens.push({ type: 'ident', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if (/\s/.test(c)) {
+        let j = i + 1;
+        while (j < n && /\s/.test(sql[j])) j++;
+        tokens.push({ type: 'ws', value: ' ' });
+        i = j;
+        continue;
+      }
+      if (/[A-Za-z_]/.test(c)) {
+        let j = i + 1;
+        while (j < n && /[A-Za-z0-9_$]/.test(sql[j])) j++;
+        tokens.push({ type: 'word', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      if (/[0-9]/.test(c)) {
+        let j = i + 1;
+        while (j < n && /[0-9.]/.test(sql[j])) j++;
+        tokens.push({ type: 'number', value: sql.slice(i, j) });
+        i = j;
+        continue;
+      }
+      // multi-char operators
+      if ((c === '<' || c === '>' || c === '!' || c === ':') && i + 1 < n) {
+        const two = sql.slice(i, i + 2);
+        if (two === '<=' || two === '>=' || two === '<>' || two === '!=' || two === '||' || two === ':=') {
+          tokens.push({ type: 'op', value: two });
+          i += 2;
+          continue;
+        }
+      }
+      if (c === '|' && sql[i + 1] === '|') {
+        tokens.push({ type: 'op', value: '||' });
+        i += 2;
+        continue;
+      }
+      if ('=<>!+-*/%'.indexOf(c) !== -1) {
+        tokens.push({ type: 'op', value: c });
+        i++;
+        continue;
+      }
+      tokens.push({ type: 'punct', value: c });
+      i++;
+    }
+    return tokens.filter(function (t) { return t.type !== 'ws'; });
+  }
+
+  function peekWords(tokens, i, count) {
+    const words = [];
+    let j = i;
+    while (j < tokens.length && words.length < count) {
+      if (tokens[j].type === 'word') words.push(tokens[j].value.toUpperCase());
+      else if (tokens[j].type === 'comment') { j++; continue; }
+      else break;
+      j++;
+    }
+    return words;
+  }
+
+  function matchMulti(tokens, i) {
+    const w3 = peekWords(tokens, i, 3);
+    if (w3.length === 3) {
+      const three = w3[0] + ' ' + w3[1] + ' ' + w3[2];
+      if (MULTI_BREAK[three]) return { text: three, take: 3 };
+    }
+    const w2 = peekWords(tokens, i, 2);
+    if (w2.length === 2) {
+      const two = w2[0] + ' ' + w2[1];
+      if (MULTI_BREAK[two]) return { text: two, take: 2 };
+    }
+    return null;
+  }
+
+  function formatSql(sql, opts) {
+    const keys = keywordSet();
+    const tokens = tokenize(sql);
+    const pad = ' '.repeat(Math.max(1, Math.min(8, opts.indent | 0 || 2)));
+    const upperCase = !!opts.upper;
+    let out = '';
+    let depth = 0;
+    let i = 0;
+
+    function lineStart() {
+      return !out || /\n$/.test(out);
+    }
+    function nl(d) {
+      out += '\n' + pad.repeat(Math.max(0, d));
+    }
+    function space() {
+      if (!out || lineStart() || /[\s(.]$/.test(out)) return;
+      out += ' ';
+    }
+
+    while (i < tokens.length) {
+      const t = tokens[i];
+
+      if (t.type === 'comment') {
+        if (!lineStart() && !/ $/.test(out)) out += ' ';
+        out += t.value;
+        nl(depth);
+        i++;
+        continue;
+      }
+
+      if (t.type === 'punct') {
+        if (t.value === '(') {
+          // Space after keywords (IN, VALUES, etc.); none after function-like idents is also fine with a space
+          if (out && /[A-Za-z0-9_]$/.test(out)) out += ' ';
+          out += '(';
+          depth++;
+          nl(depth);
+          i++;
+          continue;
+        }
+        if (t.value === ')') {
+          depth = Math.max(0, depth - 1);
+          nl(depth);
+          out += ')';
+          i++;
+          continue;
+        }
+        if (t.value === ',') {
+          out += ',';
+          nl(depth);
+          i++;
+          continue;
+        }
+        if (t.value === ';') {
+          out += ';';
+          depth = 0;
+          nl(0);
+          i++;
+          continue;
+        }
+        if (t.value === '.') {
+          out += '.';
+          i++;
+          continue;
+        }
+        space();
+        out += t.value;
+        i++;
+        continue;
+      }
+
+      if (t.type === 'op') {
+        space();
+        out += t.value;
+        out += ' ';
+        i++;
+        continue;
+      }
+
+      if (t.type === 'string' || t.type === 'ident' || t.type === 'number') {
+        space();
+        out += t.value;
+        i++;
+        continue;
+      }
+
+      if (t.type === 'word') {
+        const multi = matchMulti(tokens, i);
+        let text;
+        let take = 1;
+        let breakKey = t.value.toUpperCase();
+
+        if (multi) {
+          text = upperCase ? multi.text : tokens.slice(i, i + multi.take).filter(function (x) { return x.type === 'word'; }).map(function (x) { return x.value; }).join(' ');
+          // recount take over tokens (skip comments already filtered)
+          let got = 0;
+          let j = i;
+          while (j < tokens.length && got < multi.take) {
+            if (tokens[j].type === 'word') got++;
+            j++;
+          }
+          take = j - i;
+          breakKey = multi.text;
+        } else {
+          const u = t.value.toUpperCase();
+          text = (keys[u] && upperCase) ? u : t.value;
+          breakKey = u;
+        }
+
+        const shouldBreak = MULTI_BREAK[breakKey] || BREAK_BEFORE[breakKey.split(' ')[0]] && (
+          breakKey === 'SELECT' || breakKey === 'FROM' || breakKey === 'WHERE' || breakKey === 'HAVING' ||
+          breakKey === 'LIMIT' || breakKey === 'OFFSET' || breakKey === 'RETURNING' || breakKey === 'UNION' ||
+          breakKey === 'EXCEPT' || breakKey === 'INTERSECT' || breakKey === 'INSERT' || breakKey === 'UPDATE' ||
+          breakKey === 'DELETE' || breakKey === 'SET' || breakKey === 'VALUES' || breakKey === 'WITH' ||
+          breakKey === 'JOIN' || breakKey === 'AND' || breakKey === 'OR' || breakKey === 'ON' || MULTI_BREAK[breakKey] ||
+          breakKey.indexOf('JOIN') !== -1 || breakKey === 'GROUP BY' || breakKey === 'ORDER BY' ||
+          breakKey === 'INSERT INTO' || breakKey === 'DELETE FROM' || breakKey === 'UNION ALL'
+        );
+
+        // Refine: only break AND/OR at similar indent under WHERE-like clauses; always ok
+        if (shouldBreak && out && !lineStart() && !/\($/.test(out)) {
+          // Outdent major clauses relative to SELECT list
+          if (breakKey === 'FROM' || breakKey === 'WHERE' || breakKey === 'HAVING' ||
+              breakKey === 'LIMIT' || breakKey === 'OFFSET' || breakKey === 'RETURNING' ||
+              breakKey === 'GROUP BY' || breakKey === 'ORDER BY' || breakKey === 'SET' ||
+              breakKey === 'UNION' || breakKey === 'UNION ALL' || breakKey === 'EXCEPT' || breakKey === 'INTERSECT') {
+            if (depth > 0) depth = Math.max(0, depth - 1);
+          }
+          nl(depth);
+        } else {
+          space();
+        }
+
+        out += text;
+
+        // Indent after clause openers
+        if (breakKey === 'SELECT' || breakKey === 'WHERE' || breakKey === 'HAVING' ||
+            breakKey === 'SET' || breakKey === 'VALUES' || breakKey === 'ON' ||
+            breakKey === 'GROUP BY' || breakKey === 'ORDER BY') {
+          depth++;
+          nl(depth);
+        } else if (breakKey.indexOf('JOIN') !== -1) {
+          // stay; next ON handled as word ON with BREAK? ON is not in BREAK_BEFORE alone as newline after join line
+        }
+
+        i += take;
+        continue;
+      }
+
+      i++;
+    }
+
+    // Special-case: put ON on same line after JOIN alias by post-pass? Handle ON with break.
+    // Post-process ON: we didn't break before ON. Add break before ON.
+    return out
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/ \./g, '.')
+      .replace(/\. /g, '.')
+      .trim();
+  }
+
+  function minifySql(sql) {
+    const keys = keywordSet();
+    const tokens = tokenize(sql);
+    let out = '';
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      if (t.type === 'comment') continue;
+      if (t.type === 'punct') {
+        if (t.value === '.') {
+          out += '.';
+          continue;
+        }
+        if (t.value === ',' ) {
+          out += ', ';
+          continue;
+        }
+        if (t.value === '(') {
+          // strip space before (
+          out = out.replace(/ $/, '');
+          out += '(';
+          continue;
+        }
+        if (t.value === ')') {
+          out = out.replace(/ $/, '');
+          out += ')';
+          continue;
+        }
+        if (t.value === ';') {
+          out = out.replace(/ $/, '');
+          out += ';';
+          continue;
+        }
+        out += t.value;
+        continue;
+      }
+      if (t.type === 'op') {
+        out = out.replace(/ $/, '');
+        out += ' ' + t.value + ' ';
+        continue;
+      }
+      if (t.type === 'word') {
+        const u = t.value.toUpperCase();
+        const piece = keys[u] && upperEl.checked ? u : t.value;
+        if (out && !/[.(]$/.test(out)) out += ' ';
+        out += piece;
+        continue;
+      }
+      if (t.type === 'string' || t.type === 'ident' || t.type === 'number') {
+        if (out && !/[.(]$/.test(out)) out += ' ';
+        out += t.value;
+      }
+    }
+    return out.replace(/ +/g, ' ').replace(/\( /g, '(').replace(/ \)/g, ')').replace(/ \./g, '.').replace(/\. /g, '.').trim();
+  }
+
+  function optsFromUi() {
+    return {
+      indent: parseInt(indentEl.value, 10) || 2,
+      upper: upperEl.checked
+    };
+  }
+
+  document.getElementById('format').onclick = function () {
+    const sql = input.value;
+    if (!sql.trim()) {
+      setStatus('Paste SQL to format.', 'bad');
+      return;
+    }
+    try {
+      input.value = formatSql(sql, optsFromUi());
+      setStatus('Formatted (' + dialectEl.options[dialectEl.selectedIndex].text + ').', 'ok');
+    } catch (err) {
+      setStatus('Format failed: ' + (err && err.message ? err.message : String(err)), 'bad');
+    }
+  };
+
+  document.getElementById('minify').onclick = function () {
+    const sql = input.value;
+    if (!sql.trim()) {
+      setStatus('Paste SQL to minify.', 'bad');
+      return;
+    }
+    try {
+      input.value = minifySql(sql);
+      setStatus('Minified.', 'ok');
+    } catch (err) {
+      setStatus('Minify failed: ' + (err && err.message ? err.message : String(err)), 'bad');
+    }
+  };
+
+  document.getElementById('copy').onclick = async function () {
+    if (!input.value) {
+      setStatus('Nothing to copy.', 'bad');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(input.value);
+      setStatus('Copied to clipboard.', 'ok');
+    } catch (err) {
+      setStatus('Copy failed: ' + err.message, 'bad');
+    }
+  };
+
+  document.getElementById('clear').onclick = function () {
+    input.value = '';
+    setStatus('Cleared.', '');
+  };
+})();
+  </script>
+</body>
+</html>
